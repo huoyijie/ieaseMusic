@@ -1,12 +1,13 @@
 
-import request from 'request-promise-native';
 import _debug from 'debug';
 
 const debug = _debug('dev:plugin:MiGu');
 const error = _debug('dev:plugin:MiGu:error');
 
+let rp;
+
 async function getURL(id) {
-    var response = await request({
+    var response = await rp({
         uri: 'http://m.music.migu.cn/music-h5/player/findSong.json',
         qs: {
             copyrightId: id
@@ -22,10 +23,12 @@ async function getURL(id) {
     }
 }
 
-export default async(keyword, artists) => {
+export default async(request, keyword, artists) => {
     debug(`Search '${keyword} - ${artists}' use MiGu library.`);
 
-    var response = await request({
+    rp = request;
+
+    var response = await rp({
         uri: 'http://m.music.migu.cn/music-h5/search/searchAll.json',
         qs: {
             keyWord: [keyword].concat(artists.split(',')).join('+'),
